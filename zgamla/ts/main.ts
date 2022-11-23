@@ -1,4 +1,3 @@
-import { addTodo, changeTodo, removeAllTodos } from "./functions"; //import av functions...
 import { Todo } from "./models/Todo"; //import av klassen Todo.
 
 let todos: Todo[] = JSON.parse(localStorage.getItem("todos") || "[]");
@@ -31,19 +30,21 @@ document.getElementById("clearTodos")?.addEventListener("click", () => {
     ).value; //hämtar vår inputtag och skapar en variabel av dess värde.
     console.log("Todos when creating", todos);
 
-    createNewTodo(todoText, todos); //anropar funktionen för att skapa ny todo samt skickar med inputvärdet todoText samt listan todos [].
+    createNewTodo(todoText, todos); //anropar funktionen för att skapa ny todo från inputvärdet, samt skicakr med detta värde och todos [].
   }
 );
 
 function createNewTodo(todoText: string, todos: Todo[]) {
-  let result = addTodo(todoText, todos); //ny variabel result fångar in resultatet av anrop av funktion addTodo - till vilken vi skickar med inputvärdet todoText samt listan todos []).
+  if (todoText.length > 2) {
+    //om texten i input är minst 3 tecken, kör denna kod.
+    displayError("", false);
+    let newTodo = new Todo(todoText, false); //skapar nytt objekt från vår importerade klass Todo.
+    todos.push(newTodo); //pushar in den nya todon på listan todos [].
 
-  if (result.success) {
-    //om resultaet var att det blev en ny todo skapad - kör denna kod:
-    createHtml(todos);
+    createHtml(todos); //anropar funktionen för att skapa html av detta, och skickar med listan todos [].
   } else {
-    //om det EJ blev en ny todo skapad - kör denna kod:
-    displayError(result.error, true); //anropa funktion för att display errormeddelande och skicka med att den är true.
+    //om texten i input är max 2 tecken, kör denna kod.
+    displayError("Du måste skriva in minst tre tecken som uppgift", true);
   }
 }
 
@@ -77,8 +78,8 @@ function createHtml(todos: Todo[]) {
 }
 
 function toggleTodo(todo: Todo) {
-  //anropar funktioner för att toggla boolean på todo, samt anropar direkt efter createHtml för att uppdatera listan.
-  changeTodo(todo); //anropar denna funktion som kommer att toggla boolean.
+  //toggla boolean.
+  todo.done = !todo.done;
   createHtml(todos); //anropa funktion och skicka med listan.
 }
 
@@ -88,22 +89,22 @@ function displayError(error: string, show: boolean) {
     "error"
   ) as HTMLDivElement; //hämta container för felmedd.
 
-  errorContainer.innerHTML = error; //lägg in felmeddelande (error kommer från vår importerade funktion addTodo
-  //(FRÅGA: right??))
+  errorContainer.innerHTML = error; //lägg in felmeddelande - FRÅGA: VAR FINNS VARIABEL ERROR?
 
   if (show) {
-    //om boolean för error (show) är true (error är true, errormeddelande ska visas), kör denna kod:
+    //FÖRKLARING??? Om show är true. VAR BESTÄMS DETTA?
     errorContainer.classList.add("show"); //klass för styling: display:block,
   } else {
-    //om boolean för error (show) är false (error är false, errormeddelande ska EJ visas), kör denna kod:
+    //
     errorContainer.classList.remove("show");
   }
 }
 
 function clearTodos(todos: Todo[]) {
-  removeAllTodos(todos); //anropar funktion removeAllTodos och skickar med listan todos []. //(removeAllTodos kommer i sin tur rensa listan).
-  createHtml(todos); //anropar funktion createHtml och skickar med listan todos []. //(createHtml kommer i sin tur skicka listan till local storage, samt skapa html).
+  //funktion för att rensa listan.
+  todos.splice(0, todos.length); //ta bort alla positioner från hela listan.
+  createHtml(todos); //skicka todos [] till funktionen för att skicka listan till local storage, samt skapa html.
 }
 
 createHtml(todos); //anropa funktionen för att skicka listan till local storage, samt skapa html.
-//FRÅGA: VARFÖR ANROPAS ENBART DENNA I ROTEN? Är det för att listan (från ) ska skapas upp vid uppstart av sidan?
+//FRÅGA: VARFÖR ANROPAS ENBART DENNA I ROTEN?
