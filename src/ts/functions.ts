@@ -2,6 +2,7 @@ import { IAddResponse } from "./models/IAddResult"; //import av interface (med e
 import { Todo } from "./models/Todo"; //import av function Todo.
 
 export function addTodo(todoText: string, todos: Todo[]): IAddResponse {
+  //return kommer ha datatyp: IAddResponse //KAN MAN BARA TILLDELA DATATYP SÅ HÄR?!
   if (todoText.length > 2) {
     //om texten i input är minst 3 tecken, kör denna kod.
     let newTodo = new Todo(todoText, false); //skapar nytt objekt från vår importerade klass Todo.
