@@ -1,4 +1,4 @@
-import { addTodo, changeTodo, removeAllTodos } from "./functions"; //import av functions...
+import { addTodo, changeTodo, removeAllTodos } from "./functions"; //import av dessa tre functions.
 import { Todo } from "./models/Todo"; //import av klassen Todo.
 
 let todos: Todo[] = JSON.parse(localStorage.getItem("todos") || "[]");

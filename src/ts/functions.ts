@@ -1,5 +1,5 @@
-import { IAddResponse } from "./models/IAddResult"; //interface (med egenskaperna success samt error) som importeras för att användas i vår funktion addTodo.
-import { Todo } from "./models/Todo";
+import { IAddResponse } from "./models/IAddResult"; //import av interface (med egenskaperna success samt error) som importeras för att användas i vår funktion addTodo.
+import { Todo } from "./models/Todo"; //import av function Todo.
 
 export function addTodo(todoText: string, todos: Todo[]): IAddResponse {
   if (todoText.length > 2) {
