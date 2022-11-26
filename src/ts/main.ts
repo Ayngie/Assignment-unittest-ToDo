@@ -1,19 +1,30 @@
+/**
+ *@jest-environment jsdom
+ */
+
 import { addTodo, changeTodo, removeAllTodos } from "./functions"; //import av dessa tre functions.
 import { Todo } from "./models/Todo"; //import av klassen Todo.
+
+window.onload = function () {
+  //INTE SATT NGN EXPORT HÄR - BLEV RÖTT DÅ!
+  init();
+  createHtml(todos); //Vid uppstart: anropa funktionen (här i main.ts) för att skicka listan till local storage, samt skapa html. listan (från ) ska skapas upp vid uppstart av sidan?
+};
 
 let todos: Todo[] = JSON.parse(localStorage.getItem("todos") || "[]");
 //listan av todos hämtas från localStorage.
 
 export function init() {
+  //should upon submit/click clear the todos [], then send userinputvalue + todos[] to function createNewTodo.
   document.getElementById("clearTodos")?.addEventListener("click", () => {
-    clearTodos(todos);
+    exports.clearTodos(todos); //anropar funktionen (här i main.ts).
   }); //hämtar knappen för att rensa listan och lyssnar efter klicket, om klick -> anropar funktion clearTodos.
 
   (document.getElementById("newTodoForm") as HTMLFormElement)?.addEventListener(
     "submit",
     //lyssnar på formuläret, lyssnar på klick = vid click->triggas formuläret/submit.
     //(det räcker med att lyssna på fomuläret, det är buttonklicket som "vandrar uppåt" och triggar vår submit som vi lyssnar på på vår form (det sker precis efter klicket)).
-    //vid klick/submit ->anropas nedan funktion.
+    //vid klick/submit ->anropas nedan anonyma funktion (och e skickas med!).
     (e: SubmitEvent) => {
       e.preventDefault(); //prevent default (förhindrar att formuläret töms).
       /* normalt vid skicka formulär - skickar tillbaka till vår sida o allt töms. NU vill vi själva bestämma vad som ska hända istället! 
@@ -32,27 +43,25 @@ export function init() {
       ).value; //hämtar vår inputtag och skapar en variabel av dess värde.
       console.log("Todos when creating", todos);
 
-      createNewTodo(todoText, todos); //anropar funktionen för att skapa ny todo samt skickar med inputvärdet todoText samt listan todos [].
+      exports.createNewTodo(todoText, todos); //anropar funktionen (här i main.ts) för att skapa ny todo samt skickar med inputvärdet todoText samt listan todos [].
     }
   );
 }
-window.onload = function () {
-  init();
-};
 
-function createNewTodo(todoText: string, todos: Todo[]) {
-  let result = addTodo(todoText, todos); //ny variabel result fångar in resultatet av anrop av funktion addTodo - till vilken vi skickar med inputvärdet todoText samt listan todos []).
+export function createNewTodo(todoText: string, todos: Todo[]) {
+  //should recieve inputvalue + todos [] and call + send these on to function addTodo - and get a result --> if result is a success - call on function createHtml and send along todos[], else if result is error - call on function displayError.
+  let result = addTodo(todoText, todos); //ny variabel result fångar in resultatet av anrop av funktion addTodo (i functions.ts) - till vilken vi skickar med inputvärdet todoText samt listan todos []).
 
   if (result.success) {
-    //om resultaet var att det blev en ny todo skapad - kör denna kod:
-    createHtml(todos);
+    //om resultatet var att det blev en ny todo skapad - kör denna kod:
+    exports.createHtml(todos); //anropar funktion (här i main.ts)
   } else {
     //om det EJ blev en ny todo skapad - kör denna kod:
-    displayError(result.error, true); //anropa funktion för att display errormeddelande och skicka med att den är true.
+    exports.displayError(result.error, true); //anropa funktion (här i main.ts) för att display errormeddelande och skicka med att den är true.
   }
 }
 
-function createHtml(todos: Todo[]) {
+export function createHtml(todos: Todo[]) {
   //funktion för att skicka listan till local storage, samt skapa html.
   localStorage.setItem("todos", JSON.stringify(todos)); //gör om todos [] till string och lägg in i localStorage.
 
@@ -74,20 +83,20 @@ function createHtml(todos: Todo[]) {
     li.innerHTML = todos[i].text; // lägg in värden i innerHTML.
     li.addEventListener("click", () => {
       //lyssna på klick för att toggla boolean.
-      toggleTodo(todos[i]); //anropa funktion vid klick, samt skicka med värdet av den todo användaren klickade på.
+      exports.toggleTodo(todos[i]); //anropa funktion (här i main.ts) vid klick, samt skicka med värdet av den todo användaren klickade på.
     });
 
     todosContainer.appendChild(li); //lägg in li i ul så de syns i vår HTML.
   }
 }
 
-function toggleTodo(todo: Todo) {
+export function toggleTodo(todo: Todo) {
   //anropar funktioner för att toggla boolean på todo, samt anropar direkt efter createHtml för att uppdatera listan.
-  changeTodo(todo); //anropar denna funktion som kommer att toggla boolean.
-  createHtml(todos); //anropa funktion och skicka med listan.
+  changeTodo(todo); //anropar denna funktion (i functions.ts) som kommer att toggla boolean.
+  exports.createHtml(todos); //anropa funktion (här i main.ts) och skicka med listan.
 }
 
-function displayError(error: string, show: boolean) {
+export function displayError(error: string, show: boolean) {
   //funktion för att visa felmeddelande.
   let errorContainer: HTMLDivElement = document.getElementById(
     "error"
@@ -105,10 +114,7 @@ function displayError(error: string, show: boolean) {
   }
 }
 
-function clearTodos(todos: Todo[]) {
-  removeAllTodos(todos); //anropar funktion removeAllTodos och skickar med listan todos []. //(removeAllTodos kommer i sin tur rensa listan).
-  createHtml(todos); //anropar funktion createHtml och skickar med listan todos []. //(createHtml kommer i sin tur skicka listan till local storage, samt skapa html).
+export function clearTodos(todos: Todo[]) {
+  removeAllTodos(todos); //anropar funktion removeAllTodos (i functions.ts) och skickar med listan todos []. //(removeAllTodos kommer i sin tur rensa listan).
+  exports.createHtml(todos); //anropar funktion createHtml (här i main.ts) och skickar med listan todos []. //(createHtml kommer i sin tur skicka listan till local storage, samt skapa html).
 }
-
-createHtml(todos); //anropa funktionen för att skicka listan till local storage, samt skapa html.
-//FRÅGA: VARFÖR ANROPAS ENBART DENNA I ROTEN? Är det för att listan (från ) ska skapas upp vid uppstart av sidan?
