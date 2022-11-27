@@ -230,77 +230,25 @@ describe("init", () => {
 
   test("should be able to submit form/click", () => {
     //arrange
-    let spy = jest.spyOn(mainFunctions, "createNewTodo").mockReturnValue();
-
+    let testList: Todo[] = [];
     document.body.innerHTML = `
     <form id="newTodoForm">
     <div>
       <input type="text" id="newTodoText"/>
-      <button "letsAddSomeStuff">Skapa</button>
+      <button id="clickBtn">Skapa</button>
     </div>
   </form>
-    `;
-
-    mainFunctions.init();
+    `; //skapar innerHTML - så att vi kan lyssna på submit på formuläret.
+    mainFunctions.init(); //anropar init för att där finns vår addEventListener.
+    let spy = jest.spyOn(mainFunctions, "createNewTodo").mockReturnValue(); //lyssnar efter anrop på createNewTodo, som ska anropas vid submit av userInput.
 
     //act
     (document.getElementById("newTodoText") as HTMLInputElement).value =
-      "Peppar";
-    document.getElementById("letsAddSomeStuff")?.click();
+      "Peppar"; //simulerar att användaren har skrivit in peppar
+    document.getElementById("clickBtn")?.click(); //simulerar klickknapp på vår button som triggar formuläret vi lyssnar på (klicket "vandrar uppåt" till vår addEventListener på formuläret).
 
     //assert
     expect(spy).toHaveBeenCalled();
-    expect(spy).toHaveBeenCalledWith("Peppar");
+    expect(spy).toHaveBeenCalledWith("Peppar", testList);
   });
 });
-
-/*
-test("should be able to submit", () => {
-  //test för att testa funktion init
-  //arrange
-  let spy = jest.spyOn(functions, "clearTodos").mockReturnValue();
-
-  document.body.innerHTML = `
-  <form id="newTodoForm">
-    <div>
-        <input type="text" id="newTodoText" />
-        <button>Skapa</button>
-    </div>
-  </form>`; //skapar innerHTML - så att vi kan lyssna på submit på formuläret.
-
-  functions.init(); //min modul punkt funktionsnamnet. ANROPAR init för att där finns vår addEventListener.
-
-  let anotherSpy = jest.spyOn(functions, "createNewTodo").mockReturnValue();
-
-  //act
-  document.getElementById("newTodoForm")?.click(); //hitta formuläret/submit/knappen, och om denna finns, så klicka på den.
-  //assert
-  expect(spy).toHaveBeenCalled();
-
-  //i arrange så skapar vi knappen, lyssnar på klicket, sen i act klickar vi på knappen :) samt slutligen utvärderar vi i assert.
-});
-*/
-
-/* test("should update list", () => {
-  //test för att testa funktion toggleTodo
-  //arrange
-  let todos: Todo[] = [new Todo("text1", true), new Todo("text2", true)];
-  let testTodo: Todo = new Todo("text3", true); //skapa variabel som är en simulering av en todo som ska in på listan
-  todos.push(testTodo);
-
-  //act
-  functions.createHtml(todos);
-
-  //assert
-  expect(testTodo.done).toBe(false); //Kollar boolean-egenskapen - obs!
-});
-*/
-
-/*
-test("should x", () => {
-    //test av funktion
-    //arrange
-    //act
-    //assert
-  });
-*/
