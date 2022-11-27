@@ -228,6 +228,39 @@ describe("init", () => {
     jest.restoreAllMocks();
   });
 
+  test("should sort todolist in alphabetic order", () => {
+    //arrange
+    let testList: Todo[] = [
+      { text: "Ananas", done: true },
+      { text: "Ananas", done: true }, //en g till för att kolla === delen i andra ifen
+      { text: "Smör", done: true },
+      { text: "Bakpulver", done: true },
+    ];
+    //act
+    mainFunctions.sortToDoListByABC(testList);
+    //assert
+    expect(testList[0].text).toBe("Ananas");
+    expect(testList[2].text).toBe("Bakpulver");
+    expect(testList[3].text).toBe("Smör");
+  });
+
+  test("should sort todolist by boolean order (true values first)", () => {
+    //arrange
+    let testList: Todo[] = [
+      { text: "Ananas", done: false },
+      { text: "Smör", done: true },
+      { text: "Äpplen", done: true },
+      { text: "Bakpulver", done: false },
+    ];
+    //act
+    mainFunctions.sortToDoListByDone(testList);
+    //assert
+    expect(testList[0].done).toBe(false);
+    expect(testList[1].done).toBe(false);
+    expect(testList[2].done).toBe(true);
+    expect(testList[3].done).toBe(true);
+  });
+
   test("should be able to submit form/click", () => {
     //arrange
     let testList: Todo[] = [];
@@ -238,7 +271,7 @@ describe("init", () => {
       <button id="clickBtn">Skapa</button>
     </div>
   </form>
-    `; //skapar innerHTML - så att vi kan lyssna på submit på formuläret.
+    `; //skapar innerHTML - så att vi kan lyssna på submit på formuläret, som triggas av klick på knappen.
     mainFunctions.init(); //anropar init för att där finns vår addEventListener.
     let spy = jest.spyOn(mainFunctions, "createNewTodo").mockReturnValue(); //lyssnar efter anrop på createNewTodo, som ska anropas vid submit av userInput.
 

@@ -20,6 +20,14 @@ export function init() {
     exports.clearTodos(todos); //anropar funktionen (här i main.ts).
   }); //hämtar knappen för att rensa listan och lyssnar efter klicket, om klick -> anropar funktion clearTodos.
 
+  document.getElementById("btn-sort-ABC")?.addEventListener("click", () => {
+    exports.sortToDoListByABC(todos);
+  }); //hämtar knappen för att sortera listitems i alfabetisk ordning, lyssnar på den, för att vid klick ->anropa funktion sortTodoList.
+
+  document.getElementById("btn-sort-boolean")?.addEventListener("click", () => {
+    exports.sortToDoListByDone(todos);
+  }); //hämtar knappen för att sortera listitems beroende på boolean done true / false, lyssnar på den, för att vid klick ->anropa funktion sortTodoList.
+
   (document.getElementById("newTodoForm") as HTMLFormElement)?.addEventListener(
     "submit",
     //lyssnar på formuläret, lyssnar på klick = vid click->triggas formuläret/submit.
@@ -44,8 +52,33 @@ export function init() {
       console.log("Todos when creating", todos);
 
       exports.createNewTodo(todoText, todos); //anropar funktionen (här i main.ts) för att skapa ny todo samt skickar med inputvärdet todoText samt listan todos [].
+
+      (document.getElementById("newTodoText") as HTMLFormElement).value = ""; //rensa input efter användaren slagit enter / skapa.
     }
   );
+}
+
+export function sortToDoListByABC(todos: Todo[]) {
+  todos.sort((a, b) => {
+    if (a.text.toLowerCase() < b.text.toLowerCase()) {
+      return -1;
+    }
+
+    if (a.text.toLowerCase() === b.text.toLowerCase()) {
+      return 0;
+    } else {
+      return +1;
+    }
+  });
+
+  createHtml(todos);
+}
+
+export function sortToDoListByDone(todos: Todo[]) {
+  todos.sort((a, b) => Number(a.done) - Number(b.done)); //true values first. //Convert the 2 boolean values to numbers, subtract the first number from the second. Now the sort method will sort by boolean property.
+
+  console.log(todos);
+  createHtml(todos);
 }
 
 export function createNewTodo(todoText: string, todos: Todo[]) {
